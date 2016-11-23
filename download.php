@@ -19,33 +19,7 @@ if (file_exists($linksFile)) {
 }
 
 if (count($links) == 0) {
-	$xPath = Kissanime::crawl($url);
-	$el = $xPath->query("//*[@id='leftside']/div[2]/div[2]/div[2]/table");
-	$el = $el->item(0);
-
-	$nodes = $el->childNodes;	// TR's
-	$i = 1;
-	
-	$links = [];
-	foreach ($nodes as $n) {
-		if ($i++ < 3) continue;
-		
-		$cells = $n->childNodes;	// TD's
-		foreach ($cells as $child) {
-			// find the td containing link
-			if (!property_exists($child, 'tagName') || $child->tagName !== 'td') {
-				continue;
-			}
-			$a = $child->childNodes;
-			foreach ($a as $value) {
-				if (!property_exists($value, 'tagName') || $value->tagName !== 'a') {
-					continue;
-				}
-
-				$links[] = $value->getAttribute('href');
-			}
-		}
-	}
+	$links = Kissanime::links($url);
 
 	$links = array_reverse($links);
 	file_put_contents($linksFile, json_encode($links));
@@ -69,10 +43,9 @@ foreach ($links as $l) {
 	}
 }
 
-
 // these are to be downloaded
 $downloadFile = $root . $folder . '/downloadlist.txt';
-file_put_contents($downloadFile, "\n");
+unlink($downloadFile); touch($downloadFile);
 foreach ($crawled as $c) {
 	$xPath = Kissanime::crawl($c);
 
@@ -84,9 +57,6 @@ foreach ($crawled as $c) {
 
 	$downloadList[] = $downloadURL;
 	file_put_contents($downloadFile, $downloadURL . "\r\n", FILE_APPEND);
-
-	// exec('wget -U "'.Kissanime::$ua.'" -O '. $root . $folder . '/episodes/' . $episode . '.mp4 ' . "'" . $downloadURL . "'");
-	// exec('/usr/local/aria2/bin/aria2c -s 15 -o '. $root . $folder . '/episodes/' . $episode . '.mp4 ' . "'" . $downloadURL . "'");
 
 }
 preg_match('/Episode-([0-9]+)/', $last->start, $matches);
