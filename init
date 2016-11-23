@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+php start.php $1 $2 $3
+php download.php $1
+./downloader list.txt
