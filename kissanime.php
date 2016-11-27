@@ -4,7 +4,7 @@ use \Curl\Curl as Curl;
 class Kissanime {
 	public static $domain = "http://kissanime.to";
 
-	public static $cookie = '__cfduid=d2183780ad53f8aa71df2c1505ecad2f21470975714; __atuvc=0%7C43%2C0%7C44%2C1%7C45%2C1%7C46%2C4%7C47; cf_clearance=0882228560fd93a72187a8b6f660f4cdba4294cd-1479837254-86400; idtz=14.139.251.107-923786573; __atuvs=5835ce6a4419b86b000';
+	public static $cookie = '__cfduid=d2183780ad53f8aa71df2c1505ecad2f21470975714; __atuvc=0%7C43%2C0%7C44%2C1%7C45%2C1%7C46%2C6%7C47; cf_clearance=911243e0bc2516fd7c92629ab8295e80381079fc-1480175829-86400; idtz=14.139.251.107-588764424; __atuvs=5839b0d632de4fb3000';
 
 	public static $ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:48.0) Gecko/20100101 Firefox/48.0';
 
@@ -62,7 +62,7 @@ class Kissanime {
 		return $links;
 	}
 
-	public static function downloadURL($xPath) {
+	public static function downloadURL($xPath, $quality = "720p") {
 		$el = $xPath->query("//*[@id='selectQuality']");
 		$el = $el->item(0)->childNodes;
 
@@ -71,21 +71,16 @@ class Kissanime {
 			$inner = $opt->nodeValue;
 			$inner = preg_replace('/\s+/', '', $inner);
 
-			if ($inner == "480p") {
-				$url = base64_decode($opt->getAttribute('value'));
-				$found['480p'] = $url;
-				break;
-			} else if ($inner == "720p") {
-				$url = base64_decode($opt->getAttribute('value'));
-				$found['720p'] = $url;
-				break;
-			}
+			$url = base64_decode($opt->getAttribute('value'));
+			$found[$inner] = $url;
+
+			if ($inner == $quality) break;
 		}
 
-		if (array_key_exists('480p', $found)) {
-			$url = $found['480p'];
-		} else if (array_key_exists('720p', $found)) {
-			$url = $found['720p'];
+		if (array_key_exists($quality, $found)) {
+			$url = $found[$quality];
+		} else {
+			$url = $found['360p'] ?? $found['480p'] ?? $found['720p'];
 		}
 		return $url;
 	}

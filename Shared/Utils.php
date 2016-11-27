@@ -17,4 +17,19 @@ class Utils {
 
 		return $parsed['path'] . '?' . $parsed['query'];
 	}
+
+	protected static function _initFile($file) {
+		@unlink($file);
+		touch($file);
+	}
+
+	public static function initFile($file) {
+		if (is_array($file)) {
+			foreach ($file as $f) {
+				self::_initFile($f);
+			}
+		} else {
+			self::_initFile($file);
+		}
+	}
 }
