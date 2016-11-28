@@ -2,16 +2,6 @@
 namespace Shared;
 
 class Utils {
-	public static function episodeName($url) {
-		$url = "http://somedomain" . $url;
-		$parsed = parse_url($url);
-
-		$path = $parsed['path'];
-		$last = explode("/", $path);
-		$last = array_pop($last);
-		return $last;
-	}
-
 	public static function path($url) {
 		$parsed = parse_url($url);
 
@@ -23,6 +13,13 @@ class Utils {
 		touch($file);
 	}
 
+	public static function getJson($file) {
+		$file = file_get_contents($file);
+		$content = json_decode($file);
+
+		return $content;
+	}
+
 	public static function initFile($file) {
 		if (is_array($file)) {
 			foreach ($file as $f) {
@@ -31,5 +28,25 @@ class Utils {
 		} else {
 			self::_initFile($file);
 		}
+	}
+
+	public static function putStarting($last, $downloadFile) {
+		preg_match('/Episode-([0-9]+)|\/([0-9+])-/i', $last->start, $matches);
+
+		if (isset($matches[1])) {
+			$startingCount = (int) $matches[1];
+		} else {
+			$startingCount = 1;
+		}
+
+		file_put_contents("../start.txt", $startingCount);
+		copy($downloadFile, '../list.txt');
+	}
+
+	public static function isTag($node, $name) {
+		if (property_exists($node, 'tagName') && $node->tagName === $name) {
+			return true;
+		}
+		return false;
 	}
 }

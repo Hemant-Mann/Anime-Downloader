@@ -2,5 +2,5 @@
 
 
 php start.php $1 $2 $3
-php download.php $1
-./downloader list.txt
+php links.php $1
+# ./axelLinks
