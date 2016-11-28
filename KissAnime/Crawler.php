@@ -10,26 +10,23 @@ class Crawler {
 
 	protected static function _getConf() {
 		$folder = dirname(__FILE__);
-		var_dump($folder);
-		die();
 		$file = file_get_contents($folder . "/config.json");
 		$content = json_decode($file);
-
 		return $content;
 	}
 
-	public static function init($opts = []) {
+	public static function init($root, $opts = []) {
 		$url = $opts['url']; $new = $opts['new'] ?? false;
 		$quality = $opts['quality'] ?? '480p';
+		
 		// get links
-		$folderConfig = new Config($opts['root']);
+		$folderConfig = new Config($root);
 
 		$episodeInfo = \Shared\Utils::getJson($folderConfig->episodeInfo);
 		$downloadFile = $folderConfig->downloadFile;
-		$episodeList = $folderConfig->episodeList;
 
 		// check if we need new episodes or older will do
-		$links = self::episodeList($episodeList, $url, $new);
+		$links = self::episodeList($folderConfig->episodeList, $url, $new);
 
 		// check which links are to be crawled
 		$crawled = Utils::linksToBeCrawled($links, $episodeInfo);
@@ -38,7 +35,7 @@ class Crawler {
 		// now crawl these links to find download link foreach episode
 		Utils::getDownloadLink($crawled, $downloadFile, $quality);
 
-		\Shared\Utils::putStarting($last, $downloadFile);
+		\Shared\Utils::putStarting($episodeInfo, $downloadFile);
 	}
 
 	public static function _episodeList($url) {
@@ -59,7 +56,7 @@ class Crawler {
 				}
 				$a = $child->childNodes;
 				foreach ($a as $value) {
-					if (!\Shared\Utils::isTag($value, 'td')) {
+					if (!\Shared\Utils::isTag($value, 'a')) {
 						continue;
 					}
 

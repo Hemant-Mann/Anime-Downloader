@@ -39,12 +39,13 @@ class Utils {
 			$startingCount = 1;
 		}
 
-		file_put_contents("../start.txt", $startingCount);
-		copy($downloadFile, '../list.txt');
+		$root = dirname(dirname(__FILE__));
+		file_put_contents("{$root}/start.txt", $startingCount);
+		copy($downloadFile, "{$root}/list.txt");
 	}
 
 	public static function isTag($node, $name) {
-		if (property_exists($node, 'tagName') && $node->tagName === $name) {
+		if (property_exists($node, 'tagName') && $node->tagName == $name) {
 			return true;
 		}
 		return false;
