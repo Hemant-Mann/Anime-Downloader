@@ -2,6 +2,11 @@
 namespace KissAnime;
 
 class Utils {
+	public static function getRoot() {
+		$dir = dirname(__FILE__);
+		return dirname($dir);
+	}
+
 	public static function episodeName($url) {
 		$url = "http://google.com" . $url;
 		$parsed = parse_url($url);
@@ -15,11 +20,11 @@ class Utils {
 	public static function start($url) {
 		$argument = explode("/", $url);
 		$folder = array_pop($argument);
-		$root = '../series/' . $folder;
-		$episode = $root . '/episode.txt';
+		$root = sprintf("%s/series/%s", self::getRoot(), $folder);
+		$episode = "{$root}/episode.txt";
 
-		exec("mkdir -p {$root}");
-		touch($episode);
+		exec("mkdir -p {$root}"); touch($episode);
+		$argv = $GLOBALS['argv'];
 
 		$start = isset($argv[2]) ? \Shared\Utils::path($argv[2]) : true;
 		$end = isset($argv[3]) ? \Shared\Utils::path($argv[3]) : true;

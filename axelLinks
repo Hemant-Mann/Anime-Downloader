@@ -26,7 +26,6 @@ function download_vid() {
 		count=$((count + 1))
 	fi
 	done < "$1"
-	echo $count
 }
 
 mkdir -p downloads/

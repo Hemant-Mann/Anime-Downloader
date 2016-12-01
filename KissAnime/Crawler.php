@@ -10,9 +10,7 @@ class Crawler {
 
 	protected static function _getConf() {
 		$folder = dirname(__FILE__);
-		$file = file_get_contents($folder . "/config.json");
-		$content = json_decode($file);
-		return $content;
+		return \Shared\Utils::getJson("{$folder}/config.json");
 	}
 
 	public static function init($root, $opts = []) {
