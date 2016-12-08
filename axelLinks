@@ -19,9 +19,9 @@ function download_vid() {
 		dfile="downloads/videoplayback_${count}.mp4"
 		
 		if [[ -f "${dfile}.st" ]]; then
-			axel -a -n 16 -o $dfile $line
+			axel -a -n 10 -o $dfile $line
 		else if [[ ! -f $dfile ]]; then
-			axel -a -n 16 -o $dfile $line
+			axel -a -n 10 -o $dfile $line
 		fi
 		count=$((count + 1))
 	fi

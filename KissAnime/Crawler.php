@@ -17,7 +17,7 @@ class Crawler {
 		$url = $opts['url']; $new = $opts['new'] ?? false;
 		$quality = $opts['quality'] ?? '480p';
 		
-		// get links
+		// get directory structure
 		$folderConfig = new Config($root);
 
 		$episodeInfo = \Shared\Utils::getJson($folderConfig->episodeInfo);

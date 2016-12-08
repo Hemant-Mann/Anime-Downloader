@@ -6,7 +6,7 @@ With this PHP script you can easily download any anime
 Clone this repository in your desktop
 - Fireup http://kissanime.to in your browser
 - Then open the networks tab from console and copy the "Cookie" and "User agent" header
-- Edit the KissAnime/config.json
+- Edit the KissAnime/config.json (If not present then copy and rename the sample-config.json)
 
 And run this simple line in your terminal
 

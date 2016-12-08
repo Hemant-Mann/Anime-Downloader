@@ -1,4 +1,12 @@
+# Folder contains the list of anime folders having - episode list, episode downloading range (start to end), and recently scrapped download links in between the range
 series/
+
+# The Folder where downloading of episodes will start (Currently 1 Anime can be downloaded at a time (irrespective of the number of episodes))
 downloads/
+
+# Tmp files re-written on every re run of the code
 start.txt
 list.txt
+
+# FTP Config File
+sftp-config.json

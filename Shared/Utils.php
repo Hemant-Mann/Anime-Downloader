@@ -31,10 +31,12 @@ class Utils {
 	}
 
 	public static function putStarting($last, $downloadFile) {
-		preg_match('/Episode-([0-9]+)|\/([0-9+])-/i', $last->start, $matches);
+		preg_match('/Episode-([0-9]+)|\/([0-9]+)-/i', $last->start, $matches);
 
-		if (isset($matches[1])) {
+		if (isset($matches[1]) && $matches[1]) {
 			$startingCount = (int) $matches[1];
+		} else if (isset($matches[2]) && $matches[2]) {
+			$startingCount = (int) $matches[2];
 		} else {
 			$startingCount = 1;
 		}
