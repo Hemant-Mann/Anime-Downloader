@@ -30,6 +30,13 @@ class Utils {
 		}
 	}
 
+	public static function defaultVal($arr, $key, $default = null) {
+		if (isset($arr[$key])) {
+			return $arr[$key];
+		}
+		return $default;
+	}
+
 	public static function putStarting($last, $downloadFile) {
 		preg_match('/Episode-([0-9]+)|\/([0-9]+)-/i', $last->start, $matches);
 
@@ -48,6 +55,13 @@ class Utils {
 
 	public static function isTag($node, $name) {
 		if (property_exists($node, 'tagName') && $node->tagName == $name) {
+			return true;
+		}
+		return false;
+	}
+
+	public static function hasClass($node, $k) {
+		if (method_exists($node, 'getAttribute') && $node->getAttribute('class') === $k) {
 			return true;
 		}
 		return false;

@@ -11,7 +11,7 @@ Clone this repository in your desktop
 And run this simple line in your terminal
 
 ```bash
-./init "http://kissanime.to/Anime/Fairy-Tail-Dub" "http://kissanime.to/Anime/Fairy-Tail-Dub/001-Fairy-Tail?id=116233"
+./init "http://kissanime.io/Anime/fairy-tail-dub" "http://kissanime.io/Anime/fairy-tail-dub/watch.html?episode_id=6000" "http://kissanime.io/Anime/fairy-tail-dub/watch.html?episode_id=6090"
 ```
 
 Explaination

@@ -7,6 +7,14 @@ class Utils {
 		return dirname($dir);
 	}
 
+	public static function getAnimeName($url) {
+		$path = parse_url($url)['path'];
+		$path = rtrim($url, "/");
+		$argument = explode("/", $path);
+
+		return array_pop($argument);
+	}
+
 	public static function episodeName($url) {
 		$url = "http://google.com" . $url;
 		$parsed = parse_url($url);
@@ -18,8 +26,7 @@ class Utils {
 	}
 
 	public static function start($url) {
-		$argument = explode("/", $url);
-		$folder = array_pop($argument);
+		$folder = self::getAnimeName($url);
 		$root = sprintf("%s/series/%s", self::getRoot(), $folder);
 		$episode = "{$root}/episode.txt";
 
@@ -35,10 +42,12 @@ class Utils {
 
 	public static function linksToBeCrawled($links, $episodeInfo) {
 		$crawled = []; $push = false;
+		$i = 1;
 		foreach ($links as $l) {
 			if ($episodeInfo->start === true || $l == $episodeInfo->start) {
 				$push = true;
 			}
+			// var_dump(sprintf("Episode: %d, link: %s", $i++, $l));
 
 			if ($push) {
 				$crawled[] = $l;
@@ -52,19 +61,20 @@ class Utils {
 	}
 
 	public static function getDownloadLink($crawled, $downloadFile, $quality = "480p") {
-		$downloadLinks = [];
+		$downloadLinks = []; $i = 1;
 		foreach ($crawled as $c) {
-			$xPath = Crawler::crawl($c);
+			$body = Crawler::crawl($c, ['body' => true]);
 
-			$downloadURL = Crawler::downloadURL($xPath, $quality);
+			$downloadURL = Crawler::downloadURL($body, $quality);
 			$episode = self::episodeName($c);
 			if (is_null($downloadURL)) {
-				printf("Null episode: %s\n", $episode);
+				printf("Null episode: %d\n", $i++);
+			} else {
+				printf("Crawled episode: %d, name: %s\n", $i++, $episode);
 			}
 			$downloadLinks[] = $downloadURL;
 
 			file_put_contents($downloadFile, $downloadURL . "\r\n", FILE_APPEND);
-			printf("Crawled episode %s\n", $episode);
 		}
 		return $downloadLinks;
 	}
