@@ -9,10 +9,19 @@ class Crawler {
 	const QUALITY_REGEX = "/load_player\((.*)\);/";
 	const LINKS_XPATH = '//*[@id="leftside"]/div[2]/div[2]/div[2]/div[2]';
 
+	/**
+	 * Makes the path to anime from anime name
+	 * @param  string $folder Anime name
+	 * @return string
+	 */
 	public static function animeUrl($folder) {
 		return sprintf("/Anime/%s", $folder);
 	}
 
+	/**
+	 * Get the config file containing cookies
+	 * @return object \stdClass containing properties - ['cookie', 'ua']
+	 */
 	protected static function _getConf() {
 		$folder = dirname(__FILE__);
 		return Util::getJson("{$folder}/config.json");
@@ -26,7 +35,6 @@ class Crawler {
 		$folderConfig = new Config($folder);
 
 		$episodeInfo = Util::getJson($folderConfig->episodeInfo);
-		$downloadFile = $folderConfig->downloadFile;
 
 		// check if we need new episodes or older will do
 		$links = self::episodeList($folderConfig->episodeList, $url, $new);
@@ -34,13 +42,15 @@ class Crawler {
 		// check which links are to be crawled
 		$crawled = Utils::linksToBeCrawled($links, $episodeInfo);
 
-		Util::initFile([$downloadFile, $folderConfig->finalList]);
+		Util::initFile([$folderConfig->downloadFile, $folderConfig->finalList, $folderConfig->axelList]);
 		// now crawl these links to find download link foreach episode
-		Utils::getDownloadLink($crawled, $downloadFile, $quality);
-
-		Util::putStarting($episodeInfo, $downloadFile);
+		Utils::getDownloadLink($crawled, $folderConfig, $quality);
 	}
 
+	/**
+	 * Return the Href and link title from the table element
+	 * @return array     Assoc Array
+	 */
 	protected static function _linkNode($el) {
 		$nodes = $el->childNodes->item(1)->childNodes;
 		$h3 = (object) ['childNodes' => []];
@@ -51,19 +61,26 @@ class Crawler {
 			}
 		}
 		$nodes = $h3->childNodes;
-		$link= ' ';
+		$link= ['href' => '', 'title' => ''];
 		foreach ($nodes as $n) {
 			if (!Util::isTag($n, 'a')) {
 				continue;
 			} else {
 				$url = "http:" . $n->getAttribute('href');
 				$parsed = parse_url($url);
-				$link = sprintf("%s?%s", $parsed['path'], $parsed['query']);
+				$link['href'] = sprintf("%s?%s", $parsed['path'], $parsed['query']);
+				$link['title'] = $n->nodeValue;
 			}
 		}
 		return $link;
 	}
 
+	/**
+	 * Traverses the DOM tree to find the element containing the links
+	 * !!!!!!! NEED TO MODIFY THIS FUNCTION IF WEBSITE STRUCTURE CHANGES !!!!!!!!
+	 * @param  string $url Path to anime
+	 * @return array      Array of links
+	 */
 	public static function _episodeList($url) {
 		$xPath = self::crawl($url);
 		$el = $xPath->query(self::LINKS_XPATH);
@@ -80,6 +97,8 @@ class Crawler {
 
 	/**
 	 * Get List of episodes for an anime
+	 * @param string $linksFile Full path to the links file
+	 * @param string $anime Name of the anime
 	 */
 	public static function episodeList($linksFile, $anime, $new = false) {
 		$links = [];
@@ -134,6 +153,12 @@ class Crawler {
 		return $xPath;
 	}
 
+	/**
+	 * Get download url from the body by finding the link containing url to videos
+	 * @param  string $body    HTML of the page
+	 * @param  string $quality 1080p|720p|480p|360p
+	 * @return string|null          Desired quality URL
+	 */
 	public static function downloadURL($body, $quality = "720p") {
 		$url = null;
 		preg_match(self::QUALITY_REGEX, $body, $matches);

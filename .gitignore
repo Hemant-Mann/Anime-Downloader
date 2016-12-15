@@ -5,7 +5,7 @@ series/
 downloads/
 
 # Tmp files re-written on every re run of the code
-start.txt
+axel-list.txt
 list.txt
 
 # FTP Config File

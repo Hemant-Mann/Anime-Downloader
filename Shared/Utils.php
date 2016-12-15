@@ -9,10 +9,18 @@ class Utils {
 	}
 
 	protected static function _initFile($file) {
-		@unlink($file);
-		touch($file);
+		@unlink($file); touch($file);
 	}
 
+	public static function goodFileName($name) {
+		return str_replace([" ", "(", ")"], "_", $name);
+	}
+
+	/**
+	 * Decodes the file containing json data
+	 * @param  string $file Full path to the file
+	 * @return object       \stdClass
+	 */
 	public static function getJson($file) {
 		$file = file_get_contents($file);
 		$content = json_decode($file);
@@ -20,6 +28,10 @@ class Utils {
 		return $content;
 	}
 
+	/**
+	 * Makes the file (if not exists) and removes all the content in the file
+	 * @param  string|array $file Path to the file
+	 */
 	public static function initFile($file) {
 		if (is_array($file)) {
 			foreach ($file as $f) {
@@ -30,27 +42,18 @@ class Utils {
 		}
 	}
 
+	/**
+	 * Function to assign default value if array key is not isset
+	 * @param  array $arr
+	 * @param  string $key     Name of the key in the array
+	 * @param  mixed $default Default value to be returned in case of failure
+	 * @return mixed
+	 */
 	public static function defaultVal($arr, $key, $default = null) {
 		if (isset($arr[$key])) {
 			return $arr[$key];
 		}
 		return $default;
-	}
-
-	public static function putStarting($last, $downloadFile) {
-		preg_match('/Episode-([0-9]+)|\/([0-9]+)-/i', $last->start, $matches);
-
-		if (isset($matches[1]) && $matches[1]) {
-			$startingCount = (int) $matches[1];
-		} else if (isset($matches[2]) && $matches[2]) {
-			$startingCount = (int) $matches[2];
-		} else {
-			$startingCount = 1;
-		}
-
-		$root = dirname(dirname(__FILE__));
-		file_put_contents("{$root}/start.txt", $startingCount);
-		copy($downloadFile, "{$root}/list.txt");
 	}
 
 	public static function isTag($node, $name) {

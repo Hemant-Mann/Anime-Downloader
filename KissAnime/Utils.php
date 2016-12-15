@@ -15,16 +15,6 @@ class Utils {
 		return array_pop($argument);
 	}
 
-	public static function episodeName($url) {
-		$url = "http://google.com" . $url;
-		$parsed = parse_url($url);
-
-		$path = $parsed['path'];
-		$last = explode("/", $path);
-		$last = array_pop($last);
-		return $last;
-	}
-
 	public static function start($url) {
 		$folder = self::getAnimeName($url);
 		$root = sprintf("%s/series/%s", self::getRoot(), $folder);
@@ -44,7 +34,7 @@ class Utils {
 		$crawled = []; $push = false;
 		$i = 1;
 		foreach ($links as $l) {
-			if ($episodeInfo->start === true || $l == $episodeInfo->start) {
+			if ($episodeInfo->start === true || $l->href == $episodeInfo->start) {
 				$push = true;
 			}
 			// var_dump(sprintf("Episode: %d, link: %s", $i++, $l));
@@ -53,29 +43,31 @@ class Utils {
 				$crawled[] = $l;
 			}
 
-			if ($l === $episodeInfo->end) {
+			if ($l->href === $episodeInfo->end) {
 				$push = false;
 			}
 		}
 		return $crawled;
 	}
 
-	public static function getDownloadLink($crawled, $downloadFile, $quality = "480p") {
-		$downloadLinks = []; $i = 1;
-		foreach ($crawled as $c) {
-			$body = Crawler::crawl($c, ['body' => true]);
+	public static function getDownloadLink($crawled, $folderConfig, $quality = "480p") {
+		$downloadLinks = [];
+		foreach ($crawled as $link) {
+			$body = Crawler::crawl($link->href, ['body' => true]);
 
 			$downloadURL = Crawler::downloadURL($body, $quality);
-			$episode = self::episodeName($c);
+			$title = $link->title;
 			if (is_null($downloadURL)) {
-				printf("Null episode: %d\n", $i++);
+				printf("Null episode: %s\n", $title);
 			} else {
-				printf("Crawled episode: %d, name: %s\n", $i++, $episode);
+				printf("Crawled episode: %s\n", $title);
 			}
 			$downloadLinks[] = $downloadURL;
 
-			file_put_contents($downloadFile, $downloadURL . "\r\n", FILE_APPEND);
+			file_put_contents($folderConfig->downloadFile, $downloadURL . "\r\n", FILE_APPEND);
+			file_put_contents($folderConfig->axelList, sprintf("%s;%s", $downloadURL, \Shared\Utils::goodFileName($title)) . "\r\n", FILE_APPEND);
 		}
+		copy($folderConfig->downloadFile, $folderConfig->finalList);
 		return $downloadLinks;
 	}
 }
