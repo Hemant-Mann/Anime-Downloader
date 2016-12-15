@@ -28,8 +28,9 @@ class Crawler {
 	}
 
 	public static function init($folder, $opts = []) {
-		$url = $opts['url']; $new = $opts['new'] ?? false;
-		$quality = $opts['quality'] ?? '480p';
+		$url = $opts['url'];
+		$new = Util::defaultVal($opts, 'new', false);
+		$quality = Util::defaultVal($opts, 'quality', '480p');
 		
 		// get directory structure
 		$folderConfig = new Config($folder);
@@ -184,7 +185,9 @@ class Crawler {
 		if (array_key_exists($quality, $found)) {
 			$url = $found[$quality];
 		} else {
-			$url = $found['360p'] ?? $found['480p'] ?? $found['720p'] ?? null;
+			foreach (['720p', '480p', '360p'] as $value) {
+				$url = Util::defaultVal($found, $value, null);
+			}
 		}
 		return $url;
 	}
