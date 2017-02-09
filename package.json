@@ -1,0 +1,31 @@
+{
+  "name": "anime-downloader",
+  "version": "1.0.0",
+  "description": "Simple Script to download Anime",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hemant-Mann/Anime-Downloader.git"
+  },
+  "keywords": [
+    "anime",
+    "downloader",
+    "anime",
+    "downloader"
+  ],
+  "author": "Hemant Mann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hemant-Mann/Anime-Downloader/issues"
+  },
+  "homepage": "https://github.com/Hemant-Mann/Anime-Downloader#readme",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "cheerio": "^0.22.0",
+    "crawler": "^1.0.2",
+    "request": "^2.79.0"
+  }
+}
